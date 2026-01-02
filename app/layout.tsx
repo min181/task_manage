@@ -33,12 +33,12 @@ export default function RootLayout({
             <Header />
             {children}
           </div>
-          <footer className="mt-20 pt-8 border-t border-gray-100 text-center space-y-1.5 italic">
-            <p className="text-[10px] md:text-xs text-gray-400 font-light tracking-tight">
+          <footer className="mt-20 pt-8 border-t border-gray-100 text-center space-y-1.5 font-semibold">
+            <p className="text-[10px] md:text-xs text-gray-400 tracking-tight">
               This application is a personal web application project for learning and practice purposes.
             </p>
-            <p className="text-[10px] md:text-xs text-gray-500 font-normal tracking-widest opacity-80">
-              Made by <span className="font-semibold not-italic">Taki</span>
+            <p className="text-[10px] md:text-xs text-gray-500 tracking-widest opacity-80 uppercase">
+              Made by Taki
             </p>
           </footer>
         </div>

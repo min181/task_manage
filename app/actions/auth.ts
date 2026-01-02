@@ -28,7 +28,7 @@ export async function authenticate(
 }
 
 export async function signInWithGoogle() {
-  await signIn("google");
+  await signIn("google", { redirectTo: "/" });
 }
 
 export async function register(
@@ -37,10 +37,15 @@ export async function register(
 ) {
   const email = (formData.get("email") as string)?.toLowerCase();
   const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
   const name = formData.get("name") as string;
 
   if (!email || !password) {
     return "メールアドレスとパスワードは必須です。";
+  }
+
+  if (password !== confirmPassword) {
+    return "パスワードが一致しません。";
   }
 
   try {
@@ -66,5 +71,15 @@ export async function register(
     return "ユーザー登録中にエラーが発生しました。";
   }
 
-  redirect("/login");
+  // 新規登録後に自動ログインを実行
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: "/",
+    });
+  } catch (error) {
+    // リダイレクトエラー（正常動作）はそのまま投げる必要がある
+    throw error;
+  }
 }

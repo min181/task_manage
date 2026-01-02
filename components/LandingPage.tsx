@@ -16,7 +16,7 @@ export function LandingPage() {
           <span className="text-blue-600">スマートに整理</span>しましょう。
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          「やること整理くん」は、直感的な操作でタスクをカテゴリ分けし、
+          「やること整理くん」は、直感的な操作でタスクをカテゴリ分けし、<br className="hidden md:block" />
           締切順に一覧できる、あなたのためのパーソナルアシスタントです。
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -152,24 +152,62 @@ export function LandingPage() {
       </section>
 
       {/* Usage Section */}
-      <section className="bg-gray-50 rounded-3xl p-12 space-y-12">
-        <h2 className="text-3xl font-bold text-center">使い方はとても簡単</h2>
-        <div className="grid md:grid-cols-3 gap-12">
+      <section className="bg-gray-50 rounded-3xl p-8 md:p-16 space-y-16">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold text-gray-900">直感的な 3 ステップ</h2>
+          <p className="text-gray-500 text-lg">使い始めるのに複雑な説明は不要です。</p>
+        </div>
+        <div className="grid lg:grid-cols-3 gap-12">
           <Step
             number="1"
-            title="アカウント作成"
-            description="メールアドレスだけで数秒で登録完了。すぐに使い始めることができます。"
-          />
+            title="カテゴリを作成"
+            description="まずはタスクを入れる箱を作ります。好きな色とアイコンを選んで、あなたらしく整理。"
+          >
+            <div className="mt-6 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+              <div className="h-8 w-full bg-gray-50 rounded-md border border-gray-200 flex items-center px-2 text-[10px] text-gray-400">仕事...</div>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className={`w-5 h-5 rounded-full ${i === 1 ? 'bg-blue-500 ring-2 ring-blue-200' : 'bg-gray-200'}`} />
+                ))}
+              </div>
+            </div>
+          </Step>
           <Step
             number="2"
-            title="カテゴリを作成"
-            description="「仕事」や「趣味」など、自分に合ったカテゴリを色分けして作成します。"
-          />
+            title="タスクを追加"
+            description="やるべきことをサッと入力。優先度の★や締切を設定して、管理を確実に。"
+          >
+            <div className="mt-6 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3 text-left text-xs">
+              <div className="flex items-center gap-2 border-b pb-2">
+                <div className="w-4 h-4 rounded border border-gray-300" />
+                <span className="font-medium">提案資料の作成</span>
+              </div>
+              <div className="flex justify-between items-center text-[10px]">
+                <div className="flex gap-2 text-yellow-500 font-bold">★ 高い</div>
+                <div className="text-gray-400">12/25 締切</div>
+              </div>
+            </div>
+          </Step>
           <Step
             number="3"
-            title="タスクを追加"
-            description="タイトルと締切を入力。あとは完了したらチェックを入れるだけです。"
-          />
+            title="締切表示で確認"
+            description="「やること順」タブを開けば、全てのタスクが締切順に。今やるべきことが明確になります。"
+          >
+            <div className="mt-6 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-2 text-left text-[9px]">
+              <div className="p-1.5 bg-blue-50 border-l-2 border-blue-500 rounded flex justify-between">
+                <span>【仕事】資料送付</span>
+                <span className="text-red-500 font-bold">今日</span>
+              </div>
+              <div className="p-1.5 bg-gray-50 border-l-2 border-gray-400 rounded flex justify-between opacity-70">
+                <span>【個人】買い物</span>
+                <span className="text-gray-500">明日</span>
+              </div>
+              <div className="p-1.5 bg-gray-50 border-l-2 border-gray-300 rounded flex justify-between opacity-50">
+                <span>【趣味】読書</span>
+                <span className="text-gray-500">3日後</span>
+              </div>
+            </div>
+          </Step>
         </div>
       </section>
 
@@ -196,14 +234,31 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
   );
 }
 
-function Step({ number, title, description }: { number: string; title: string; description: string }) {
+function Step({
+  number,
+  title,
+  description,
+  children,
+}: {
+  number: string;
+  title: string;
+  description: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="text-center space-y-4">
-      <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto shadow-lg shadow-blue-200">
-        {number}
+    <div className="flex flex-col h-full bg-white lg:bg-transparent p-6 lg:p-0 rounded-3xl lg:rounded-none">
+      <div className="text-center space-y-4 flex-grow">
+        <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto shadow-lg shadow-blue-200">
+          {number}
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+        <p className="text-gray-500 leading-relaxed text-sm">{description}</p>
       </div>
-      <h3 className="text-xl font-bold">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">{description}</p>
+      {children && (
+        <div className="mt-auto pt-2">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
