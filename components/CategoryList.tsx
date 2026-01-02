@@ -1,19 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import React from "react";
 import { CategoryCard } from "./CategoryCard";
-import { Button } from "./ui/Button";
-import { Modal } from "./ui/Modal";
-import { CategoryForm } from "./CategoryForm";
 
 interface CategoryListProps {
   categories: any[];
 }
 
 export function CategoryList({ categories }: CategoryListProps) {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -21,13 +15,6 @@ export function CategoryList({ categories }: CategoryListProps) {
           <h1 className="text-3xl font-bold text-gray-900">カテゴリ</h1>
           <p className="text-gray-500 mt-1">タスクをカテゴリ別に整理しましょう</p>
         </div>
-        <Button 
-          onClick={() => setIsAddModalOpen(true)} 
-          className="flex items-center gap-2 rounded-xl shadow-sm"
-        >
-          <Plus className="w-5 h-5" />
-          <span>新しいカテゴリ</span>
-        </Button>
       </div>
 
       {categories.length === 0 ? (
@@ -44,14 +31,6 @@ export function CategoryList({ categories }: CategoryListProps) {
           ))}
         </div>
       )}
-
-      <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        title="新しいカテゴリ"
-      >
-        <CategoryForm onSuccess={() => setIsAddModalOpen(false)} />
-      </Modal>
     </div>
   );
 }

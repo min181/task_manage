@@ -8,7 +8,8 @@ import {
   AlertCircle, 
   MoreHorizontal,
   Edit2,
-  Trash2
+  Trash2,
+  Star
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { toggleTaskStatus, deleteTask } from "@/app/actions/task";
@@ -24,13 +25,18 @@ interface TaskCardProps {
     isCompleted: boolean;
     priority: string;
     categoryId: string;
+    category?: {
+      name: string;
+      color: string;
+    };
   };
+  categoryColor?: string;
   showCategoryName?: string;
   onToggle?: () => void;
   onDelete?: () => void;
 }
 
-export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDelete }: TaskCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -65,11 +71,13 @@ export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCar
     : null;
 
   const isOverdue = task.deadline && new Date(task.deadline) < new Date() && !task.isCompleted;
+  const activeColor = categoryColor || task.category?.color || "#3b82f6";
 
   return (
-    <div className={`group bg-white p-4 rounded-xl border transition-all ${
-      task.isCompleted ? "opacity-60" : "hover:border-blue-200 hover:shadow-sm"
-    }`}>
+    <div className={`group relative bg-white p-4 rounded-xl border transition-all overflow-hidden ${
+      task.isCompleted ? "opacity-60" : "hover:shadow-md"
+    } ${task.priority === "high" && !task.isCompleted ? "border-yellow-200 bg-yellow-50/30" : "border-gray-100"}`}
+    style={{ borderLeftWidth: "6px", borderLeftColor: activeColor }}>
       <div className="flex items-start gap-4">
         <button
           onClick={handleToggle}
@@ -87,8 +95,8 @@ export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCar
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <h3 className={`font-semibold text-gray-900 truncate ${
-              task.isCompleted ? "line-through text-gray-400" : ""
+            <h3 className={`font-bold text-gray-900 truncate ${
+              task.isCompleted ? "line-through text-gray-400 font-normal" : ""
             }`}>
               {task.title}
             </h3>
@@ -132,7 +140,7 @@ export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCar
           </div>
 
           {task.description && (
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2 italic">
               {task.description}
             </p>
           )}
@@ -148,16 +156,23 @@ export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCar
               </div>
             )}
 
-            {task.priority === "high" && (
-              <div className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-red-100 text-red-700">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>優先度: 高</span>
+            {task.priority === "high" && !task.isCompleted && (
+              <div className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md bg-yellow-100 text-yellow-700 border border-yellow-200">
+                <Star className="w-3.5 h-3.5 fill-yellow-500" />
+                <span>優先: 高</span>
               </div>
             )}
 
-            {showCategoryName && (
-              <div className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-600">
-                {showCategoryName}
+            {(showCategoryName || task.category?.name) && (
+              <div 
+                className="text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm"
+                style={{ 
+                  backgroundColor: `${activeColor}15`, 
+                  color: activeColor,
+                  borderColor: `${activeColor}30`
+                }}
+              >
+                {showCategoryName || task.category?.name}
               </div>
             )}
           </div>

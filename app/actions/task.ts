@@ -35,6 +35,7 @@ export async function createTask(formData: {
   description?: string;
   deadline?: Date;
   priority: string;
+  repeatPattern?: string;
   categoryId: string;
 }) {
   const user = await getMockUser();
@@ -56,6 +57,7 @@ export async function updateTask(
     description?: string;
     deadline?: Date;
     priority?: string;
+    repeatPattern?: string;
     categoryId?: string;
   }
 ) {
@@ -82,6 +84,52 @@ export async function toggleTaskStatus(id: string, currentStatus: boolean) {
     where: { id, userId: user.id },
     data: { isCompleted: !currentStatus },
   });
+
+  // タスクを完了にした場合、繰り返し設定を確認して次回分を作成
+  if (!currentStatus === true && task.repeatPattern && task.repeatPattern !== "none") {
+    const nextDeadline = calculateNextDeadline(task.deadline, task.repeatPattern);
+    
+    if (nextDeadline) {
+      await prisma.task.create({
+        data: {
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          repeatPattern: task.repeatPattern,
+          categoryId: task.categoryId,
+          userId: task.userId,
+          deadline: nextDeadline,
+          isCompleted: false,
+        },
+      });
+    }
+  }
+
   revalidatePath("/");
   return task;
+}
+
+/**
+ * 繰り返し設定に基づいて次の締切日を計算する
+ */
+function calculateNextDeadline(currentDeadline: Date | null, pattern: string): Date | null {
+  if (!currentDeadline) return null;
+
+  const next = new Date(currentDeadline);
+
+  switch (pattern) {
+    case "weekly":
+      next.setDate(next.getDate() + 7);
+      break;
+    case "monthly":
+      next.setMonth(next.getMonth() + 1);
+      break;
+    case "yearly":
+      next.setFullYear(next.getFullYear() + 1);
+      break;
+    default:
+      return null;
+  }
+
+  return next;
 }

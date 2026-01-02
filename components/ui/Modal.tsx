@@ -28,14 +28,14 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="flex-none flex items-center justify-between px-6 py-4 border-b">
           <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="rounded-full p-1 w-8 h-8">
             <X className="w-5 h-5" />
           </Button>
         </div>
-        <div className="p-6">
+        <div className="flex-1 p-6 overflow-y-auto min-h-0">
           {children}
         </div>
       </div>

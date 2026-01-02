@@ -1,10 +1,13 @@
 import { getCategories } from "./actions/category";
-import { CategoryList } from "@/components/CategoryList";
+import { getAllTasksByDeadline } from "./actions/task";
+import { Dashboard } from "@/components/Dashboard";
 import { ListTodo } from "lucide-react";
-import Link from "next/link";
 
 export default async function Home() {
-  const categories = await getCategories();
+  const [categories, allTasks] = await Promise.all([
+    getCategories(),
+    getAllTasksByDeadline()
+  ]);
 
   return (
     <main className="space-y-12">
@@ -13,19 +16,13 @@ export default async function Home() {
           <div className="p-2 bg-blue-600 rounded-xl text-white">
             <ListTodo className="w-8 h-8" />
           </div>
-          <span className="text-2xl font-black tracking-tight">TaskManage</span>
+          <span className="text-2xl font-black tracking-tight text-gray-900">
+            やること整理くん
+          </span>
         </div>
-        <nav>
-          <Link 
-            href="/all-tasks" 
-            className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors bg-white px-4 py-2 rounded-full border shadow-sm"
-          >
-            全てのタスク（締切順）
-          </Link>
-        </nav>
       </header>
 
-      <CategoryList categories={categories} />
+      <Dashboard categories={categories} allTasks={allTasks} />
     </main>
   );
 }

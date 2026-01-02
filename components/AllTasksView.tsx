@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import { TaskCard } from "./TaskCard";
 import { Button } from "./ui/Button";
-import Link from "next/link";
 
 interface AllTasksViewProps {
   tasks: any[];
@@ -17,19 +16,12 @@ export function AllTasksView({ tasks }: AllTasksViewProps) {
     ? tasks.filter(t => !t.isCompleted) 
     : tasks;
 
-  // 締切ごとにグループ化するための簡易ロジック（オプションだが今回はフラットに表示）
-  
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="rounded-full p-2 h-10 w-10">
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-          </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">全てのタスク</h1>
+            <h1 className="text-3xl font-bold text-gray-900">やること順</h1>
             <p className="text-gray-500 text-sm">締切が近い順に表示しています</p>
           </div>
         </div>
