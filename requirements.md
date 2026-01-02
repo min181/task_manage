@@ -31,9 +31,17 @@
   - **やること順**: カテゴリを問わず、全てのタスクを締切日が近い順に一覧表示。
 - **カテゴリ別表示**: 特定のカテゴリに属するタスクのみを表示する。
 
-### 2.4 ユーザー管理（基盤のみ）
-- ログイン機能の実装は後回しとするが、データベース上にはユーザー情報を保持するテーブルを用意する。
-- 全てのカテゴリおよびタスクは、特定のユーザーに紐付く設計とする。
+### 2.4 ユーザー管理
+- **認証方式**:
+  - メールアドレスとパスワードによるログイン。
+  - ソーシャルログイン（Google, Apple）。
+- **ユーザー登録**:
+  - 新規ユーザー登録画面（サインアップ）を提供する。
+- **データ保護**:
+  - ログインしていないユーザーは、ログイン画面にリダイレクトされる（保護されたルート）。
+  - 各ユーザーは自分自身のデータ（カテゴリ、タスク）のみを閲覧・操作できる。
+- **既存データ対応**:
+  - 開発中は既存のモックユーザーデータを維持し、ログイン可能な状態にする。
 
 ## 3. 非機能要件
 - **UI/UX**: 
@@ -48,9 +56,29 @@
 
 ### User
 - id: String (ID)
-- email: String
+- name: String?
+- email: String (unique)
+- emailVerified: DateTime?
+- image: String?
+- password: String? (ハッシュ化)
+- accounts: Account[]
+- sessions: Session[]
 - categories: Category[]
 - tasks: Task[]
+
+### Account (NextAuth用)
+- id: String
+- userId: String
+- type: String
+- provider: String
+- providerAccountId: String
+- refresh_token: String?
+- access_token: String?
+- expires_at: Int?
+- token_type: String?
+- scope: String?
+- id_token: String?
+- session_state: String?
 
 ### Category
 - id: String

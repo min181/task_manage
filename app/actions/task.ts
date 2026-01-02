@@ -1,15 +1,17 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { getMockUser } from "@/lib/user";
+import { getCurrentUser } from "@/lib/user";
 import { revalidatePath } from "next/cache";
 
 export async function getTasks(categoryId: string) {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) return [];
+
   return await prisma.task.findMany({
-    where: { 
+    where: {
       userId: user.id,
-      categoryId: categoryId 
+      categoryId: categoryId,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -19,7 +21,9 @@ export async function getTasks(categoryId: string) {
  * 全てのタスクを締切順に取得（横断ビュー用）
  */
 export async function getAllTasksByDeadline() {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) return [];
+
   return await prisma.task.findMany({
     where: { userId: user.id },
     include: { category: true },
@@ -38,7 +42,9 @@ export async function createTask(formData: {
   repeatPattern?: string;
   categoryId: string;
 }) {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) throw new Error("認証が必要です");
+
   const task = await prisma.task.create({
     data: {
       ...formData,
@@ -61,7 +67,9 @@ export async function updateTask(
     categoryId?: string;
   }
 ) {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) throw new Error("認証が必要です");
+
   const task = await prisma.task.update({
     where: { id, userId: user.id },
     data: formData,
@@ -71,7 +79,9 @@ export async function updateTask(
 }
 
 export async function deleteTask(id: string) {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) throw new Error("認証が必要です");
+
   await prisma.task.delete({
     where: { id, userId: user.id },
   });
@@ -79,7 +89,9 @@ export async function deleteTask(id: string) {
 }
 
 export async function toggleTaskStatus(id: string, currentStatus: boolean) {
-  const user = await getMockUser();
+  const user = await getCurrentUser();
+  if (!user) throw new Error("認証が必要です");
+
   const task = await prisma.task.update({
     where: { id, userId: user.id },
     data: { isCompleted: !currentStatus },
