@@ -12,6 +12,13 @@ export async function getCategories() {
   });
 }
 
+export async function getCategory(id: string) {
+  const user = await getMockUser();
+  return await prisma.category.findUnique({
+    where: { id, userId: user.id },
+  });
+}
+
 export async function createCategory(formData: {
   name: string;
   color: string;

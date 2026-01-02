@@ -26,14 +26,20 @@ interface TaskCardProps {
     categoryId: string;
   };
   showCategoryName?: string;
+  onToggle?: () => void;
+  onDelete?: () => void;
 }
 
-export function TaskCard({ task, showCategoryName }: TaskCardProps) {
+export function TaskCard({ task, showCategoryName, onToggle, onDelete }: TaskCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   const handleToggle = async () => {
+    if (onToggle) {
+      onToggle();
+      return;
+    }
     setIsPending(true);
     try {
       await toggleTaskStatus(task.id, task.isCompleted);
@@ -45,6 +51,10 @@ export function TaskCard({ task, showCategoryName }: TaskCardProps) {
   };
 
   const handleDelete = async () => {
+    if (onDelete) {
+      onDelete();
+      return;
+    }
     if (confirm("このタスクを削除してもよろしいですか？")) {
       await deleteTask(task.id);
     }

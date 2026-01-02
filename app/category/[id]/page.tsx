@@ -1,5 +1,5 @@
 import { getTasks } from "@/app/actions/task";
-import { getCategories } from "@/app/actions/category";
+import { getCategory } from "@/app/actions/category";
 import { TaskList } from "@/components/TaskList";
 import { notFound } from "next/navigation";
 
@@ -9,14 +9,16 @@ export default async function CategoryPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const categories = await getCategories();
-  const category = categories.find((c) => c.id === id);
+
+  // 並列でデータを取得して待ち時間を短縮
+  const [category, tasks] = await Promise.all([
+    getCategory(id),
+    getTasks(id)
+  ]);
 
   if (!category) {
     notFound();
   }
-
-  const tasks = await getTasks(id);
 
   return <TaskList category={category} tasks={tasks} />;
 }

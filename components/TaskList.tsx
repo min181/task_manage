@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useOptimistic } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
 import { TaskCard } from "./TaskCard";
 import { Button } from "./ui/Button";
@@ -8,6 +8,7 @@ import { Modal } from "./ui/Modal";
 import { TaskForm } from "./TaskForm";
 import Link from "next/link";
 import { getIconComponent } from "@/lib/constants";
+import { toggleTaskStatus, deleteTask } from "@/app/actions/task";
 
 interface TaskListProps {
   category: {
@@ -23,8 +24,46 @@ export function TaskList({ category, tasks }: TaskListProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const IconComponent = getIconComponent(category.icon);
 
-  const incompleteTasks = tasks.filter(t => !t.isCompleted);
-  const completedTasks = tasks.filter(t => t.isCompleted);
+  // 楽観的更新のための設定
+  const [optimisticTasks, updateOptimisticTasks] = useOptimistic(
+    tasks,
+    (state, { type, id }: { type: string; id: string }) => {
+      switch (type) {
+        case "toggle":
+          return state.map((t: any) =>
+            t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
+          );
+        case "delete":
+          return state.filter((t: any) => t.id !== id);
+        default:
+          return state;
+      }
+    }
+  );
+
+  const handleToggle = async (id: string, currentStatus: boolean) => {
+    // 即座にUIを更新
+    updateOptimisticTasks({ type: "toggle", id });
+    try {
+      await toggleTaskStatus(id, currentStatus);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("このタスクを削除してもよろしいですか？")) return;
+    // 即座にUIから削除
+    updateOptimisticTasks({ type: "delete", id });
+    try {
+      await deleteTask(id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const incompleteTasks = optimisticTasks.filter(t => !t.isCompleted);
+  const completedTasks = optimisticTasks.filter(t => t.isCompleted);
 
   return (
     <div className="flex flex-col gap-8">
@@ -42,7 +81,7 @@ export function TaskList({ category, tasks }: TaskListProps) {
         </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{category.name}</h1>
-          <p className="text-gray-500 text-sm">{tasks.length} 個のタスク</p>
+          <p className="text-gray-500 text-sm">{optimisticTasks.length} 個のタスク</p>
         </div>
         <div className="ml-auto">
           <Button 
@@ -65,7 +104,12 @@ export function TaskList({ category, tasks }: TaskListProps) {
           ) : (
             <div className="grid grid-cols-1 gap-3">
               {incompleteTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard 
+                  key={task.id} 
+                  task={task} 
+                  onToggle={() => handleToggle(task.id, task.isCompleted)}
+                  onDelete={() => handleDelete(task.id)}
+                />
               ))}
             </div>
           )}
@@ -78,7 +122,12 @@ export function TaskList({ category, tasks }: TaskListProps) {
             </h2>
             <div className="grid grid-cols-1 gap-3">
               {completedTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard 
+                  key={task.id} 
+                  task={task} 
+                  onToggle={() => handleToggle(task.id, task.isCompleted)}
+                  onDelete={() => handleDelete(task.id)}
+                />
               ))}
             </div>
           </section>

@@ -30,6 +30,8 @@ model Category {
   tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Task {
@@ -45,4 +47,7 @@ model Task {
   userId      String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([userId, categoryId])
+  @@index([userId, deadline])
 }
