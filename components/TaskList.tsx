@@ -107,6 +107,7 @@ export function TaskList({ category, tasks }: TaskListProps) {
                 <TaskCard 
                   key={task.id} 
                   task={task} 
+                  categoryColor={category.color}
                   onToggle={() => handleToggle(task.id, task.isCompleted)}
                   onDelete={() => handleDelete(task.id)}
                 />

@@ -6,7 +6,6 @@ import {
   Circle, 
   Calendar, 
   AlertCircle, 
-  MoreHorizontal,
   Edit2,
   Trash2,
   Star
@@ -38,7 +37,6 @@ interface TaskCardProps {
 
 export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDelete }: TaskCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   const handleToggle = async () => {
@@ -74,22 +72,18 @@ export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDe
   const activeColor = categoryColor || task.category?.color || "#3b82f6";
 
   return (
-    <div className={`group relative bg-white p-4 rounded-xl border transition-all overflow-hidden ${
-      task.isCompleted ? "opacity-60" : "hover:shadow-md"
+    <div className={`group relative bg-white rounded-xl border transition-all overflow-hidden flex items-stretch ${
+      task.isCompleted ? "opacity-60 shadow-sm" : "hover:shadow-md shadow-sm"
     } ${task.priority === "high" && !task.isCompleted ? "border-yellow-200 bg-yellow-50/30" : "border-gray-100"}`}
     style={{ borderLeftWidth: "6px", borderLeftColor: activeColor }}>
-      <div className="flex items-start gap-4">
+      
+      {/* メインコンテンツエリア */}
+      <div className="flex-1 p-4 flex items-start gap-4">
         <button
           onClick={handleToggle}
           disabled={isPending}
           className={`mt-1 transition-colors`}
-          style={{ color: task.isCompleted ? "#22c55e" : "#d1d5db" }}
-          onMouseEnter={(e) => {
-            if (!task.isCompleted) e.currentTarget.style.color = activeColor;
-          }}
-          onMouseLeave={(e) => {
-            if (!task.isCompleted) e.currentTarget.style.color = "#d1d5db";
-          }}
+          style={{ color: task.isCompleted ? "#22c55e" : activeColor }}
         >
           {task.isCompleted ? (
             <CheckCircle2 className="w-6 h-6" />
@@ -105,46 +99,6 @@ export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDe
             }`}>
               {task.title}
             </h3>
-            
-            <div className="flex items-center gap-1 shrink-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => setIsEditModalOpen(true)}
-                title="タスクを編集"
-              >
-                <Edit2 className="w-4 h-4 text-gray-400" />
-              </Button>
-
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => setShowMenu(!showMenu)}
-                >
-                  <MoreHorizontal className="w-4 h-4 text-gray-400" />
-                </Button>
-
-                {showMenu && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                    <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 z-20 py-1 overflow-hidden">
-                      <button
-                        className="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
-                        onClick={() => {
-                          handleDelete();
-                          setShowMenu(false);
-                        }}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> 削除
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
 
           {task.description && (
@@ -185,6 +139,37 @@ export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDe
             )}
           </div>
         </div>
+      </div>
+
+      {/* 操作ボタンエリア（横並び） */}
+      <div className="flex border-l border-gray-100">
+        {/* 編集ボタン */}
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          className="w-14 md:w-20 bg-gray-50 hover:bg-blue-50 border-r border-gray-100 flex flex-col items-center justify-center gap-1 transition-all group/edit"
+          title="タスクを編集"
+        >
+          <div className="p-2 rounded-full bg-white shadow-sm border border-gray-100 group-hover/edit:scale-110 group-hover/edit:text-blue-600 transition-all text-gray-400">
+            <Edit2 className="w-4 h-4 md:w-5 md:h-5" />
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-400 group-hover/edit:text-blue-500 uppercase">
+            編集
+          </span>
+        </button>
+
+        {/* 削除ボタン */}
+        <button
+          onClick={handleDelete}
+          className="w-14 md:w-20 bg-gray-50 hover:bg-red-50 flex flex-col items-center justify-center gap-1 transition-all group/delete"
+          title="タスクを削除"
+        >
+          <div className="p-2 rounded-full bg-white shadow-sm border border-gray-100 group-hover/delete:scale-110 group-hover/delete:text-red-600 transition-all text-gray-400">
+            <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-400 group-hover/delete:text-red-500 uppercase">
+            削除
+          </span>
+        </button>
       </div>
 
       <Modal
