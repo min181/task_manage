@@ -82,9 +82,14 @@ export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDe
         <button
           onClick={handleToggle}
           disabled={isPending}
-          className={`mt-1 transition-colors ${
-            task.isCompleted ? "text-green-500" : "text-gray-300 hover:text-blue-500"
-          }`}
+          className={`mt-1 transition-colors`}
+          style={{ color: task.isCompleted ? "#22c55e" : "#d1d5db" }}
+          onMouseEnter={(e) => {
+            if (!task.isCompleted) e.currentTarget.style.color = activeColor;
+          }}
+          onMouseLeave={(e) => {
+            if (!task.isCompleted) e.currentTarget.style.color = "#d1d5db";
+          }}
         >
           {task.isCompleted ? (
             <CheckCircle2 className="w-6 h-6" />
@@ -101,41 +106,44 @@ export function TaskCard({ task, categoryColor, showCategoryName, onToggle, onDe
               {task.title}
             </h3>
             
-            <div className="relative">
+            <div className="flex items-center gap-1 shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={() => setIsEditModalOpen(true)}
+                title="タスクを編集"
               >
-                <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                <Edit2 className="w-4 h-4 text-gray-400" />
               </Button>
 
-              {showMenu && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 z-20 py-1 overflow-hidden">
-                    <button
-                      className="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      onClick={() => {
-                        setIsEditModalOpen(true);
-                        setShowMenu(false);
-                      }}
-                    >
-                      <Edit2 className="w-3.5 h-3.5" /> 編集
-                    </button>
-                    <button
-                      className="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
-                      onClick={() => {
-                        handleDelete();
-                        setShowMenu(false);
-                      }}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> 削除
-                    </button>
-                  </div>
-                </>
-              )}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setShowMenu(!showMenu)}
+                >
+                  <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                </Button>
+
+                {showMenu && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                    <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 z-20 py-1 overflow-hidden">
+                      <button
+                        className="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
+                        onClick={() => {
+                          handleDelete();
+                          setShowMenu(false);
+                        }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> 削除
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
